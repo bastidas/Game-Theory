@@ -8,6 +8,9 @@
   --off-color: #ccc;
   --link-color: #ccc;
   --node-outline-color: #ccc;
+
+  --page-height: 700px;
+
 }
 
 .link {
@@ -28,12 +31,18 @@
 }
 
 
+.active{
+/*    background-color: red;*/
+/*   border : 3px solid black;*/
+}
+
 html{
     padding:0;
     margin: 0;
     height:100%;
-    font-family: 'Aldrich', Arial, Helvetica, sans-serif;
-    font-size: 1.1em;
+    font-family: 'Goudy Bookletter 1911', Georgia, serif; /*'Nunito Sans', sans-serif;*/ /*
+    'goudyBookletter', Georgia, 'Aldrich', Arial, Helvetica, sans-serif;*/
+    font-size: 1.3em;
 }
 
 body {
@@ -43,7 +52,7 @@ body {
     height:100%;
     min-height: 100%;
     width: 100%;
-    background-color: var(--main-text-color);
+    background-color: var(--background-color);
     color: var(--main-text-color);
     }
 
@@ -58,8 +67,8 @@ div.wrapper {
     max-width: 1440px;
     background-color: var(--background-color);
     /*outline-style: var(--border-status);
-    outline-color: var(--background-color);*/
-    box-shadow: 0 0 30px 30px var(--background-color);
+    outline-color: var(--background-color);*//*
+    box-shadow: 0 0 30px 30px var(--background-color);*/
 /*    overflow: visible;*/
 }
 
@@ -74,8 +83,59 @@ a:visited {
     color: var(--off-color);
 }
 
+
+
+
+#page1 {
+/*    background-color: var(--background-color);
+   border : 3px solid black;*/
+/*   height: var(--page-height);*/
+    /*margin-bottom:10px;*/
+}
+
+#page2 {
+    font-family: 'Goudy Bookletter 1911', serif;
+   /* background-color: var(--primary-color);*/
+/*    font-size: 1.4em;*/
+    padding: 35px;
+  /*  background-color: var(--background-color);*/
+    /*border : 3px solid black;*/
+}
+
+#page3 {
+    font-family: 'Goudy Bookletter 1911', serif;
+  /*  background-color: var(--primary-color);*/
+   /* font-size: 1.4em;*/
+    padding: 35px;
+/*    background-color: var(--background-color);
+    border : 3px solid black;*/
+}
+
+
+#fullpage {
+    padding-left: 55px;
+    padding-right: 55px;
+}
+
+
+.aesopSvg {
+    width:"100%";
+    height:"100%";
+    /*viewBox"0 0 800 600"*//*
+   // preserveAspectRatio:"none";*/
+}
+
+.aesopTitle {
+    font-family: 'Goudy Bookletter 1911', serif;
+    text-align: center;
+    font-size: 3.5em;
+    color: var(--main-text-color);
+}
+
 h1 {
-    font-family: 'Oswald', Helvetica, sans-serif;
+    font-family: 'Goudy Bookletter 1911', serif;
+   /* letter-spacing: 4em;*/
+   /* //font-family: 'goudyBookletter', Georgia, serif, 'Oswald', Helvetica, sans-serif;*/
     margin-top: 0px;
     margin-bottom: 0px;
     text-align: center;
@@ -86,7 +146,7 @@ h1 {
 }
 
 h2 {
-    font-family: 'Oswald', Helvetica, sans-serif;
+    font-family: 'Goudy Bookletter 1911', serif; /* 'Oswald', Helvetica, sans-serif;*/
     margin-top: 0px;
     margin-bottom: 0px;
     font-size: 2.2em;
@@ -94,7 +154,7 @@ h2 {
 }
 
 h3 {
-    font-family: 'Oswald', Helvetica, sans-serif;
+    font-family:  'Goudy Bookletter 1911', serif;
     text-align: center;
     margin-top: 0px;
     margin-bottom: 0px;
@@ -122,7 +182,7 @@ div.topRow {
 }
 
 
-div.bottomRow {
+div.footer {
     padding-top: 50px;
     margin-top: 50px;
     width: 100%;
@@ -149,12 +209,39 @@ div.rightDiv {
 }
 }
 
+
+
+
+
+
+
+/*div.topDiv {
+    height:70%;
+    float: top;
+    background-color: var(--main-bg-color);
+    outline-style: var(--border-status);
+    outline-color: orange;
+    overflow:visible;
+}
+div.lowDiv {
+    height:30%;
+    float: top;
+    background-color: var(--main-bg-color);
+    outline-style: var(--border-status);
+    outline-color: yellow;
+    overflow:visible;
+    position:relative;
+}
+
+*/
+
+
 /* for big screens */
 @media all and (min-width: 800px), (orientation: landscape) {
 div.rightDiv {
     /*max-width:0px;*/
     /*max-width:1680px;*/
-    width:48%;
+    width:50%;
     /*height: 300px;*/
     float: left;
     /*: 100%;*/
