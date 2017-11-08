@@ -8,21 +8,27 @@
 <title>Game Theory</title>  
 <link rel="shortcut icon" href="imgs/guess.png" type="image/png">
 
- <meta property="og:url"           content="http://www.alexanderbastidasfry.com/gametheory" />
- <meta property="og:type"          content="website" />
- <meta property="og:title"         content="game theory" />
- <meta property="og:description"   content="data visualization of game theory, group stability, and decision cohesion" />
+<meta property="og:url"           content="http://www.alexanderbastidasfry.com/gametheory" />
+<meta property="og:type"          content="website" />
+<meta property="og:title"         content="game theory" />
+<meta property="og:description"   content="data visualization of game theory, group stability, and decision cohesion" />
 <meta property="og:image"         content="http://www.alexanderbastidasfry.com/gametheory/imgs/guess.png">
 
-<link href="https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Nunito+Sans" rel="stylesheet">
-<!-- <script type="text/javascript" src="d3/d3.js"></script> -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script> 
-<!-- <script src="https://d3js.org/d3.v4.js"></script> -->
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.fullPage.css">
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script type="text/javascript" src="js/jquery.fullPage.js"></script>
+
+<!-- CDN -->
+<!-- <link href="https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911" rel="stylesheet">
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script> 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+
+<!-- LOCAL -->
+<script type="text/javascript" src="d3/d3.js"></script>
+<script src="js/jquery.1.11.1.min.js"></script>
+
+
+<script type="text/javascript" src="js/jquery.fullPage.min.js"></script>
+
 </head>
 <body>
 
@@ -32,7 +38,7 @@
 	<div class="section" id="page1"></div>
 	<div class="section" id="page2"></div>
 	<div class="section" id="page3">
-		<div class="slide" id="aesopSlide1">
+		<div class="slide" data-anchor="aesopSlide1" id="aesopSlide1">
 			<p>A Lion lay asleep in the forest, his great head resting on his paws. A timid little Mouse came upon him unexpectedly, and in her fright and haste to get away, ran across the Lion's nose. Roused from his nap, the Lion laid his huge paw angrily on the tiny creature to kill her.
 			</p>
 			<p>"Spare me!" begged the poor Mouse. "Please let me go and some day I will surely repay you."
@@ -77,25 +83,41 @@
 		</div>
 	</div>
 	<div class="section" id="page4">
-		<!--<div class="slide" id="slide1"></div>
-		<div class="slide" id="slide2"> Slide 2 </div>
-		<div class="slide" data-anchor="slide3"> Slide 3 </div>
-		<div class="slide" data-anchor="slide4"> Slide 4 </div>-->
+		<div class="slide" id="aesopGameSlide1">
+		</div>
+		<div class="slide" id="aesopGameSlide2">
+		</div>
+		<div class="slide" id="aesopGameSlide3">
+		</div>
 	</div>
 	<div class="section" id="page5"></div>
 	<div class="section" id="page6"></div>
-	<div class="section" id="page7">Work in progress...</div>
+	<div class="section" id="page7"></div>
+	<div class="section" id="page8"></div>
+	<div class="section" id="page9"></div>
 
-</div>
+
 
 
 <script type="text/javascript">
+
+var linkElements,
+  nodeElements,
+  linkGroup,
+  nodeGroup,
+  imageGroup,
+  linkForce,
+  simulation,
+  dragDrop,
+  nodeData,
+  linkData,
+  link;
 
 $(document).ready(function() {
 	$('#fullpage').fullpage({
 		//menu: '#menu',
 		lockAnchors: false,
-		anchors:['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5', 'chapter6'],
+		anchors:['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5', 'chapter6', 'chapter7', 'chapter8'],
 		navigation: false,
 		navigationPosition: 'right',
 		navigationTooltips: ['Title', 'Introducion ', "Aesop's Fables", "Prisoner's Dillema"],
@@ -115,11 +137,103 @@ $(document).ready(function() {
 		verticalCentered: true,
 		paddingTop: '20px', //'3em',
 		paddingBottom: '10px',
-		fixedElements: '.footer', //#header, .footer',
-		normalScrollElements: '#page1, .fixed', //'#page1', //, .page42',
+		//fixedElements: '.footer', //#header, .footer',
+		normalScrollElements: '#page1', //'#page1', //, .page42',
 		normalScrollElementTouchThreshold: 5,
-		bigSectionsDestination: top
+		bigSectionsDestination: top,
 
+
+	// onLeave: function(index, nextIndex, direction){
+	// 	var leavingSection = $(this);
+
+	// 	//after leaving section 2
+	// 	if(index == 2 && direction =='down'){
+	// 		console.log("Going to section 3!");
+	// 		console.log("leavingSection: " + leavingSection)
+	// 	}
+
+	// 	else if(index == 2 && direction == 'up'){
+	// 		console.log("Going to section 1!");
+	// 	}
+	// },
+
+	afterResize: function() {
+		//var pluginContainer = $(this);
+		// console.log("window resized");
+	},
+
+	afterLoad: function(anchorLink, index){
+		var loadedSection = $(this);
+
+		if (anchorLink == 'chapter1' ){
+			$(window).scroll(function (event) {
+    			var scroll = $(window).scrollTop();
+    			titleText(scroll * .1)
+			});
+		}
+
+		if (anchorLink == 'chapter4' ){
+			linkBehavior = "strengthBySource";
+    		chooseBehavior = false;
+    		sizeRange = "absolute";
+    		payoffNormalForm = [[[3,3],[-1,3]],[[3,-1],[-2,-2]]];
+			if (d3.select("#aesopGameSlide1").classed("active")) {
+    			graph(page4Graph1, lionAndMouse, "absolute");
+    		}
+ 			if (d3.select("#aesopGameSlide2").classed("active")) {
+    			graph(page4Graph2, goatAndGoat, "absolute");
+    		}
+    		if (d3.select("#aesopGameSlide3").classed("active")) {
+    			graph(page4Graph3, monkeyAndCat, "absolute");
+    		}
+		}
+
+		if (anchorLink == 'chapter5' ){
+			payoffNormalForm = [[[3,3],[-1,3]],[[3,-1],[-2,-2]]];
+			linkBehavior = "strengthBySource";
+    		chooseBehavior = false;
+    		sizeRange = [30, 60];
+		    graph(page5Graph, baseData5, sizeRange);
+		}
+
+		if (anchorLink == 'chapter6' ){
+			payoffNormalForm = [[[3,3],[-1,3]],[[3,-1],[-2,-2]]];
+			linkBehavior = "strengthBySource";
+    		chooseBehavior = true;
+    		sizeRange = [25, 50];
+    		cullTheWeak = false;
+		    graph(page6Graph, baseData5, sizeRange);
+		}
+
+		if (anchorLink == 'chapter7' ){
+			payoffNormalForm = [[[3,3],[-1,3]],[[3,-1],[-2,-2]]];
+			linkBehavior = "strengthBySource";
+    		chooseBehavior = true;
+    		sizeRange = [25, 50];
+    		cullTheWeak = true;
+    		graph(page7Graph, baseData7, sizeRange);
+    	}
+	},
+
+	afterSlideLoad: function(anchorLink, index, slideAnchor, slideIndex){
+		var loadedSlide = $(this);
+		linkBehavior = "strengthBySource";
+    	chooseBehavior = false;
+    	sizeRange = "absolute";
+    	cullTheWeak = false;
+    	payoffNormalForm = [[[3,3],[-1,3]],[[3,-1],[-2,-2]]];
+
+		if (slideIndex == 0){
+			graph(page4Graph1, lionAndMouse, "absolute");
+		}
+		if (slideIndex == 1){
+			graph(page4Graph2, goatAndGoat, "absolute");
+		}
+		if (slideIndex == 2){
+			graph(page4Graph3, monkeyAndCat, "absolute");
+		}
+
+	}
 	})
 });
 </script>
@@ -131,20 +245,16 @@ $(document).ready(function() {
 <script src="js/index.js"></script>
 
 <div class="footer">
-
-<div style="text-align:center;">
-	<div id="share-buttons">
-	<div id="l1">
-	<a href="http://www.alexanderbastidasfry.com"><img src="imgs/social/world.png"></a></div>
-	
-	<div id="l2"><a href="https://twitter.com/TheAstronomist"><img src="imgs/social/twitter.png"></a></div>
-	
-	<div id="l3"><a href="https://github.com/bastidas/Game-Theory"><img src="imgs/social/github.png" alt="github"></a></div>
-
-	<div id="l4"><!--<a href="https://www.facebook.com/sharer/sharer.php?u=http%3A//www.alexanderbastidasfry.com/happy">--><img src="imgs/social/facebook.png" alt="facebook"></a></div>
+	<div style="text-align:center;">
+		<div id="share-buttons">
+			<div id="l1"><a href="http://www.alexanderbastidasfry.com"><img src="imgs/social/world.png"></a></div>
+			<div id="l2"><a href="https://twitter.com/TheAstronomist"><img src="imgs/social/twitter.png"></a></div>
+			<div id="l3"><a href="https://github.com/bastidas/Game-Theory"><img src="imgs/social/github.png" alt="github"></a></div>
+			<div id="l4"><!--<a href="https://www.facebook.com/sharer/sharer.php?u=http%3A//www.alexanderbastidasfry.com/happy">--><img src="imgs/social/facebook.png" alt="facebook"></a></div>
+		</div>
 	</div>
 </div>
-
+</div>
 </div>
 </body>
 </html>

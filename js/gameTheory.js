@@ -1,8 +1,12 @@
-linkStrength = .01;
-fullWin = 2 ;//* linkStrength;
-fullFail = 0 ;//* linkStrength;
-fail = -1 ;//linkStrength;
-win = 3 ;//linkStrength;
+linkStrengthNormalization = 0.1; 
+// fullWin = 2 ;//* linkStrength;
+// fullFail = 0 ;//* linkStrength;
+// fail = -1 ;//linkStrength;
+// win = 3 ;//linkStrength;
+
+
+//var payoffNormalForm = [[[2,2],[-1,2]],[[2,-1],[0,0]]];
+//payoffNormalForm = [[[3,3],[-1,3]],[[3,-1],[-2,-2]]]
 
 function trial(alpha, beta) {
 //copycat starts with cooperation, then does what opponent does in next round
@@ -22,19 +26,24 @@ function trial(alpha, beta) {
 // TF   |  FF
 
   if (alpha && beta) {
-    return [fullWin, fullWin];
+    //return [fullWin, fullWin];
+    //console.log("payoffNormalForm[0][0]: " +  payoffNormalForm[0][0])
+    return payoffNormalForm[0][0];
   }
 
   if (alpha && !beta) {
-    return [fail, win];
+    //return [fail, win];
+    return payoffNormalForm[0][1];
   }
 
   if (!alpha && beta) {
-    return [win, fail];
+    //return [win, fail];
+    return payoffNormalForm[1][0];
   }
 
   if (!alpha && !beta) {
-    return [fullFail, fullFail];
+    //return [fullFail, fullFail];
+    return payoffNormalForm[1][1];
   } 
 }
 
@@ -66,10 +75,7 @@ function getBehavior(source, target) {
     return true;
   }
 
-
-
   if (source.behavior === "copycat") {
-    //console.log("copycat")
     if (target.playbook.length >= 1) {
       lastMove = target.playbook[target.playbook.length-1];
       if (lastMove === false) {
@@ -83,6 +89,11 @@ function getBehavior(source, target) {
       return true;
     }
   } 
+
+  if (source.behavior === "random") { 
+    if (Math.random() < .5) { return false;}
+    else {return true;}
+  }
 
   if (source.behavior === "clever") { 
   // clever fox tries to cheat!
@@ -115,127 +126,112 @@ function getBehavior(source, target) {
 }
 
 
-
-
-
 function mostDangerousGame(rootElement) {
-  var i = 0
-  if (linkData.length > 10 ) {
-    intervalDelay = 1000/linkData.length;
-  }
-  else {
-    var intervalDelay = 100;
-  }
+  var i = 0;
   
-  var intervalLoop = setInterval(function(){ game(i) }, intervalDelay);
+  while (i < linkData.length) {
+    var targetBehavior,
+    sourceBehavior,
+    trialResult;
 
-  function game() {   
-    if (i != 0 ) {
-      radiusScale = getNodeSizeScale();
-      //gameBlinkTime = 500;
-      gameBlinkTime = intervalDelay;
+    targetBehavior = getBehavior(linkData[i].target, linkData[i].source);
+    sourceBehavior = getBehavior(linkData[i].source, linkData[i].target);
 
-      console.log("#" + linkData[i-1].target.id)
-
-      //d3.select("body .wrapper #" + linkData[i-1].target.id)
-      d3.select("#" + linkData[i-1].target.id)
-        .transition()
-        .duration(gameBlinkTime)
-        .style("fill", getNodeColor (linkData[i-1].target, nodeColorLevel))
-        .attr("r", getNodeSize(linkData[i-1].target));
-
-      //to-do add link interaction visual
-      //d3.select("body .wrapper #" + linkData[i-1].source.id)
-      d3.select("#" + linkData[i-1].source.id)
-        .transition()
-        .duration(gameBlinkTime)
-        .style("fill", getNodeColor (linkData[i-1].source, nodeColorLevel))
-        .attr("r", getNodeSize(linkData[i-1].source));
-
-     //   updateSimulation();
-    }
-
-    if (i >= linkData.length) {
-      clearInterval(intervalLoop)
-      return
-    } 
-
-
-    //d3.select("body .wrapper #" + linkData[i].target.id)
-    d3.select("#" + linkData[i].target.id)
-      .style("fill", "white")
-
-
-    //d3.select("body .wrapper #" + linkData[i].source.id)
-    d3.select("#" + linkData[i].source.id)
-      .style("fill", "white")
-
-    var targetBehavior = getBehavior(linkData[i].target, linkData[i].source);
-    var sourceBehavior = getBehavior(linkData[i].source, linkData[i].target);
-
-    //console.log("targetBehavior: " + targetBehavior)
-    //console.log("sourceBehavior:" + sourceBehavior)
     trialResult = trial(sourceBehavior, targetBehavior);
 
     linkData[i].source.playbook.push(sourceBehavior);
     linkData[i].target.playbook.push(targetBehavior);
 
-    //console.log("linkData[i].source.playbook: " + linkData[i].source.playbook)
-    //console.log("linkData[i].target.playbook: " + linkData[i].target.playbook)
-
-
     linkData[i].source.value += trialResult[0]
     linkData[i].target.value += trialResult[1]
 
+    sourceStrengthDelta = trialResult[0] * linkStrengthNormalization;
+    targetStengthDelta = trialResult[1] * linkStrengthNormalization;
 
-    trialResult[0] = trialResult[0] * linkStrength;
-    trialResult[1] = trialResult[1] * linkStrength;
+    /* link strength schemes
+    summation: the sum of both trailResults
+    target-sum: the target trailResult is added
+    source-sum: the source trailResult is added
+    quadrature: ?
 
-    console.log("trialResult[0]: ", trialResult[0])
+    cullTheWeak option makes the link break if stength falls below zero
 
-    if (linkData[i].strength + trialResult[0] <= 0 ) {
+    strengthByTarget: strength determined by target only
+    strengthBySource: strength determiend by source only
+    strengthBySum: strength determined by sum of source and target
+    strengthByValue: strength determined by more valued node
+    strengthByWeightedValue: strength determined by value weighted sum of source and target
+    */
+
+    //console.log("trialResult[0]: ", trialResult[0])
+    // var linkBehavior = "strengthDefault";
+    //var linkBehavior = "strengthBySource";
+    //console.log("linkBehavior: " + linkBehavior);
+
+    switch(linkBehavior) {
+      case "strengthDefault":
+        break;
+      case "strengthBySource":
+        //console.log("case strengthBySource")
+        linkData[i].strength += sourceStrengthDelta;
+        break;
+      case "strengthByTarget":
+        console.log("case strengthByTarget")
+        linkData[i].strength += targetStengthDelta ;
+        break;
+      case "strengthBySum":
+        //console.log("case strengthBySum")
+        linkData[i].strength += sourceStrengthDelta + targetStengthDelta ;
+        break;
+      case "strengthByValue":
+        if (linkData[i].source.value >= linkData[i].target.value) {
+          linkData[i].strength += sourceStrengthDelta; 
+        }
+        else {
+          linkData[i].strength += targetStengthDelta;
+        }
+      case "strengthByWeightedValue":
+        //console.log("case strengthByWeightedValue")
+        linkData[i].strength += linkData[i].source.value * sourceStrengthDelta + 
+          linkData[i].target.value * targetStengthDelta ;
+        break;
+    }
+
+    if (linkData[i].strength > 1 ) {
+      linkData[i].strength = 1.0;
+      }
+
+
+    //console.log("i: " + i)
+    if (linkData[i].strength <= 0 ) {
       if (cullTheWeak) {
+        //console.log("link broken!")
+        //console.log("linkData.length() "+ linkData.length)
         linkData.splice(i, 1);
+        updateLinks();
+        //console.log("linkData.length() "+ linkData.length)
+        //linkData[i].strength = 0.01;
       }
       else {
-        linkData[i].strength = 0;
+        console.log("link strength at zero")
+        linkData[i].strength = 0.0;
       }
     }
-    else if (linkData[i].strength + trialResult[0] > 1 ) {
-      linkData[i].strength = 1.0;
-    }
-    else {
-      linkData[i].strength += trialResult[0]
-    }
 
-    if (linkData[i].invStrength + trialResult[1] <= 0 ) {
-      linkData[i].invStrength = 0;
-    }
-    else if (linkData[i].invStrength + trialResult[1] > 1 ) {
-      linkData[i].invStrength = 1.0;
-    }
-    else {
-      linkData[i].invStrength += trialResult[1];      
-    }
+    //console.log("linkData[i].strength: " + linkData[i].strength)
 
     i += 1;
 
-    d3.select(rootElement)
-      .selectAll("table")
-      .remove();
-
-    // d3.select("body .wrapper .rightDiv")
+    // d3.select(rootElement)
     //   .selectAll("table")
     //   .remove();
 
     // // these updates could be moved after looping for efficeny, but visually?
-    tabulate(rootElement, nodeData, ['label', 'behavior', 'value']);
+//    tabulate(rootElement, nodeData, ['id', 'behavior', 'value']);
     //linkTabulate(linkData, ['label', 'strength', 'invStrength']);
-//    updateSimulation();
+    //updateSimulation();
   }  
 }
-
-
 
 function tabulate(rootElement, data, columns) {
   var table = d3.select(rootElement)
