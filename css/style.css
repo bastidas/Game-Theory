@@ -1,6 +1,8 @@
 :root {
   --background-color: #E9E9E9;
   --primary-color: #06799F;   /*216278  024E68  3AAACF  62B4CF */
+  --primary-color3: #62B4CF;
+  --primary-color2: #3AAACF;
   --seconday-color: #FFB400;    /*BF9530  A67500  FFC740  FFD673 */
   --tertiary-color: #FF2800;   /*BF4630  A61A00  FF5D40  FF8973 */
   --main-text-color: #131313;
@@ -30,12 +32,12 @@ body {
 
 div.wrapper {
     margin: 0 auto;
-    margin-bottom: 0px;
     margin-top: 0px;
     padding-left: 0px;
     padding-right: 0px;
     width: 100%;
-    max-width: 1440px;
+    min-width: 800px;
+    max-width: 1680px;
     background-color: var(--background-color);
 }
 
@@ -71,10 +73,15 @@ a:link {
     color: var(--primary-color);
 }
 
+a:hover { 
+    color: var(--primary-color2) !important;
+}
+
 a:visited {
 /*    text-decoration: none;*/
-    color: var(--off-color);
+    color: var(--primary-color3);
 }
+
 
 
 
@@ -117,7 +124,7 @@ h3 {
     font-family: 'Goudy Bookletter 1911', serif;
     text-align: center;
     margin-top: 0px;
-    margin-bottom: 0px;
+    margin-bottom: 15px;
     font-size: 1.8em;
 }
 
@@ -151,47 +158,36 @@ div.footer {
     outline-color:  var(--tertiary-color);
 }
 
+
+div.abDiv {
+    width:49%;
+   /* border: 3px solid var(--off-color);*/
+    overflow: visible;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+   /* width: 300px;*/
+}
+
 /* for small screens */
-@media all and (max-width: 890px), (orientation: portrait) {
+/*@media all and (max-width: 890px), (orientation: portrait) {
 div.leftDiv {
     width:100%;
-/*    outline-style: var(--border-status);
-    outline-color: var(--primary-color);*/
+    outline-style: var(--border-status);
+    outline-color: var(--primary-color);
     overflow: visible;
     position: relative;
 }
 div.rightDiv {
     width:100%;
-/*    outline-style: var(--tertiary-color);
-    outline-color: grey;*/
+    outline-style: var(--tertiary-color);
+    outline-color: grey;
     overflow: visible;
 }
-}
+}*/
 
-
-/*div.topDiv {
-    height:70%;
-    float: top;
-    background-color: var(--main-bg-color);
-    outline-style: var(--border-status);
-    outline-color: orange;
-    overflow:visible;
-}
-div.lowDiv {
-    height:30%;
-    float: top;
-    background-color: var(--main-bg-color);
-    outline-style: var(--border-status);
-    outline-color: yellow;
-    overflow:visible;
-    position:relative;
-}
-
-*/
-
-
-/* for big screens */
-@media all and (min-width: 800px), (orientation: landscape) {
+/* for big screens *//*
+@media all and (min-width: 800px), (orientation: landscape) {*/
 div.rightDiv {
     /*max-width:0px;*/
     /*max-width:1680px;*/
@@ -207,21 +203,22 @@ div.rightDiv {
 div.leftDiv {
     width: 50%;
     float: left;
-/*    background-color: var(--main-bg-color);
+/*  background-color: var(--main-bg-color);
     outline-style: var(--border-status);
     outline-color: cyan;*/
     overflow:visible;
     position:relative;
 }
-}
+/*}*/
 
  /* Style the tab */
 div.tab {
-    font-family: 'Aldrich', Arial, Helvetica, sans-serif;
+   /* font-family: 'Aldrich', Arial, Helvetica, sans-serif;*/
     width: 500px;
     overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
+    /*border-top-left-radius: .5em;*/
+/*   border: 1px solid #ccc;*/
+/*    background-color: #f1f1f1;*/
 }
 
 /* Style the buttons inside the tab */
@@ -231,18 +228,27 @@ div.tab button {
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
+    padding: 6px 13px;
     transition: 0.3s;
+    background-color: var(--primary-color);
 }
+
+
+button {
+    border-top-left-radius: .5em;
+    border-top-right-radius: .5em;
+}
+
 
 /* Change background color of buttons on hover */
 div.tab button:hover {
-    background-color: #ddd;
+
+    background-color: var(--primary-color2);
 }
 
 /* Create an active/current tablink class */
 div.tab button.active {
-    background-color: #ccc;
+    background-color: var(--primary-color3);
 }
 
 /* Style the tab content */
@@ -250,24 +256,137 @@ div.tab button.active {
     width: 480px;
     display: none;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-top: none;
+    border: 1px solid var(--off-color);
+    border-bottom-left-radius: .5em;
+    border-top-right-radius: .5em;
+    border-bottom-right-radius: .5em;
+    /*border-top: none;*/
 } 
 
-
+table.tabulateTable {
+    font-size: .8em;
+/*    overflow-y:scroll;*/
+    overflow:auto;
+   /*height:100px;*/
+   height: 100%;
+   display:block;
+}
 
 table {
+    border-collapse: collapse;
     background-color: var(--main-bg-color);
-    outline-style: var(--border-status);
-    outline-color: yellow;
-    width:90%;
-    text-align:left;
+/*    border: 1px solid var(--off-color);*/
+    table-layout: fixed;
+    /*display: table-cell;*/
+    width: 400px;
 }
 
-table .th {
-    text-align:left;
+table.subTable{
+    border-collapse: collapse;
+    border: 2px black solid;
+    table-layout: fixed;
+    width: 350px;
+    height: 350px;
 }
 
+table td.tableImg { 
+    border: 2px black solid;
+    background-repeat: no-repeat;
+    background-size: 171px 171px;
+}
+
+table td.sp {
+    min-width: 30px;
+    width: 40px;
+    max-width: 50px;
+    min-height: 15px;
+    height: 22px;
+    max-height: 25px;
+}
+
+table td.tableDat {
+    border: 2px black solid;
+    font-size: 1.9em;
+    line-height: 1.0em;
+    white-space: nowrap;
+    min-width: 40px;
+    min-height: 40px;
+    width: 50px;
+    height: 50px;
+    max-width: 70px;
+    max-height: 70px;
+    font-family: helvetica, arial, sans-serif;
+}
+
+table .center {
+    margin: auto;
+    /*max-width: 120px;*/
+    text-align: center;
+    /*position:relative;*/
+}
+
+.prisonerP1 {
+    color: var(--primary-color);
+    text-align: right;
+    padding-right: 15px;
+    /*padding-top: 5px;*/
+}
+
+.prisonerP2 {
+    color: var(--seconday-color);
+    display: inline;
+    text-align: left;
+    padding-left: 15px;
+}
+
+
+.player1 {
+    color: var(--primary-color);
+}
+
+.player2 {
+    color: var(--seconday-color);
+}
+
+div.player1 {
+    color: var(--primary-color);
+    display: inline-block;
+}
+
+div.player2{
+    color: var(--seconday-color);
+    display: inline-block;
+}
+
+table .tableLabel {
+    text-align: center;
+    white-space: nowrap;
+    padding: 0px;
+    margin: 0px;
+    pointer-events: none;
+}
+
+table td.crossed
+{
+background-image: linear-gradient(to top right, transparent calc(49.5% - 2px), black, transparent calc(50.5% + 1px));
+}
+
+table .rotateText {
+/* Safari */
+-webkit-transform: rotate(-90deg);
+
+/* Firefox */
+-moz-transform: rotate(-90deg);
+
+/* IE */
+-ms-transform: rotate(-90deg);
+
+/* Opera */
+-o-transform: rotate(-90deg);
+
+/* Internet Explorer */
+filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
 
 #share-buttons img{
     padding-top: 0px;
@@ -284,40 +403,40 @@ table .th {
 #l1 img {
     width: 40px;
     height: 40px;
-    margin-left: -120px;
+    margin-left: -135px;
  }
  
  #l2 img {
     width: 40px;
     height: 40px;
-    margin-left: -40px;
+    margin-left: -55px;
  }
 
 
 #l3 img {
     width: 40px;
     height: 40px;
-    margin-left: 40px;
+    margin-left: 25px;
  }
 
 
  #l4 img {
     width: 40px;
     height: 40px;
-    margin-left: 120px;
+    margin-left: 105px;
  }
 
 #l1 img:hover {
     width: 50px;
     height: 50px;
-    margin-left: -125px;
+    margin-left: -140px;
     margin-top: -5px;
 }
 
 #l2 img:hover {
     width: 50px;
     height: 50px;
-    margin-left: -45px;
+    margin-left: -60px;
     margin-top: -5px;
 }
 
@@ -325,13 +444,13 @@ table .th {
 #l3 img:hover {
     width: 50px;
     height: 50px;
-    margin-left: 35px;
+    margin-left: 20px;
     margin-top: -5px;
 }
 
 #l4 img:hover {
     width: 50px;
     height: 50px;
-    margin-left: 115px;
+    margin-left: 100px;
     margin-top: -5px;
 }

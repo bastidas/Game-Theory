@@ -20,7 +20,9 @@ var baseData0 = {
     "source": "alpha",
     "target": "beta",
     "strength": 0.,
-    "invStrength": .1
+    "invStrength": .1,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
   }]
 }
 
@@ -46,7 +48,9 @@ var lionAndMouse = {
     "source": "lion",
     "target": "mouse",
     "strength": 0.2,
-    "invStrength": .5
+    "invStrength": .5,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
   }]
 }
 
@@ -73,7 +77,9 @@ var goatAndGoat = {
     "source": "goatI",
     "target": "goatII",
     "strength": 0.2,
-    "invStrength": .5
+    "invStrength": .5,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
   }]
 }
 
@@ -100,34 +106,37 @@ var monkeyAndCat = {
     "source": "cat",
     "target": "monkey",
     "strength": 0.2,
-    "invStrength": .1
+    "invStrength": .1,
+    "targetPlaybook": [],
+    "sourcePlaybook": []
   }]
 }
 
-
-var monkeyAndCat2 = {
+var craneAndWolf = {
   "nodes": [{
-    "id": "monkey2",
-    "label": "monkey",
+    "id": "alpha",
+    "label": "alpha",
     "group": 0,
-    "level": 0,
-    "behavior": "aesopMonkey",
+    "level": 1,
+    "behavior": "crane",
     "value": 0, 
     "playbook": []
     }, {
-    "id": "cat2",
-    "label": "cat",
+    "id": "beta",
+    "label": "beta",
     "group": 1,
-    "level": 0,
-    "behavior": "aesopCat",
+    "level": 1,
+    "behavior": "wolf",
     "value": 0, 
     "playbook": []
   }],
   "links": [{
-    "source": "monkey2",
-    "target": "cat2",
-    "strength": 0.1,
-    "invStrength": .1
+    "source": "alpha",
+    "target": "beta",
+    "strength": 0.2,
+    "invStrength": .1,
+    "targetPlaybook": [],
+    "sourcePlaybook": []
   }]
 }
 
@@ -161,17 +170,23 @@ var baseData5 = {
         "source": "dog5",
         "target": "cat5",
         "strength": .5,
-        "invStrength": .5
+        "invStrength": .5,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "dog5",
         "target": "snake5",
         "strength": .5,
-        "invStrength": .5
+        "invStrength": .5,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "cat5",
         "target": "snake5",
         "strength": .5,
-        "invStrength": .5
+        "invStrength": .5,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     }]
 };
 
@@ -248,37 +263,51 @@ var baseData7 = {
         "source": "alpha",
         "target": "beta",
         "strength": .05,
-        "invStrength": .05
+        "invStrength": .05,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "alpha2",
         "target": "alpha",
         "strength": .5,
-        "invStrength": .05
+        "invStrength": .05,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "alpha3",
         "target": "alpha",
         "strength": .5,
-        "invStrength": .05
+        "invStrength": .05,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "alpha4",
         "target": "alpha",
         "strength": .5,
-        "invStrength": .05
+        "invStrength": .05,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "beta2",
         "target": "beta",
         "strength": .5,
-        "invStrength": .005
+        "invStrength": .005,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "beta3",
         "target": "beta",
         "strength": .5,
-        "invStrength": .05
+        "invStrength": .05,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     },{
         "source": "beta4",
         "target": "beta",
         "strength": .5,
-        "invStrength": .05
+        "invStrength": .05,
+        "targetPlaybook": [],
+        "sourcePlaybook": []
     }]
 };
 
@@ -286,15 +315,17 @@ function fullyConnected(arr) {
     var dat= {};
     var nodes = [];
     var links = [];
+
     for (var i=0; i < arr.behaviors.length ; i++) {
       for (var n=0; n < arr.n[i]; n++) {
-      nodes.push({"id": arr.behaviors[i] + n,  "label": arr.behaviors[i] + n, "group": 0, "behavior": arr.behaviors[i],  "group": 0, "level": 0, "playbook": [], "value": 0});
+      nodes.push({"id": arr.behaviors[i] + n,  "label": arr.behaviors[i] + n, "group": 0, "behavior": arr.behaviors[i], "level": 0, "playbook": [], "value": 0});
       }    
     }
 
     for (var i=0 ; i < nodes.length ; i++) {
-      for (var n = i; n < nodes.length; n++) {
-      links.push({"source": nodes[i].id, "target": nodes[n].id, "strength": .01, "invStrength": .5});
+      for (var n = i+1; n < nodes.length; n++) {
+//console.log("source: ", nodes[i].id, "target: ", nodes[n].id)
+      links.push({"source": nodes[i].id, "target": nodes[n].id, "strength": .5, "invStrength": .5, "targetPlaybook": [], "sourcePlaybook": []});
       }    
     }
 

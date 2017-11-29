@@ -1,4 +1,4 @@
-linkStrengthNormalization = 0.1; 
+// cfg.linkStrengthNormalization = 0.9; 
 // fullWin = 2 ;//* linkStrength;
 // fullFail = 0 ;//* linkStrength;
 // fail = -1 ;//linkStrength;
@@ -8,7 +8,7 @@ linkStrengthNormalization = 0.1;
 //var payoffNormalForm = [[[2,2],[-1,2]],[[2,-1],[0,0]]];
 //payoffNormalForm = [[[3,3],[-1,3]],[[3,-1],[-2,-2]]]
 
-function trial(alpha, beta) {
+function trial(alpha, beta, cfg) {
 //copycat starts with cooperation, then does what opponent does in next round
 //grudger starts with cooperator, then always cheats if opponent cheats even once
 //cheater always cheats
@@ -26,28 +26,23 @@ function trial(alpha, beta) {
 // TF   |  FF
 
   if (alpha && beta) {
-    //return [fullWin, fullWin];
-    //console.log("payoffNormalForm[0][0]: " +  payoffNormalForm[0][0])
-    return payoffNormalForm[0][0];
+    return cfg.payoffNormalForm[0][0];
   }
 
   if (alpha && !beta) {
-    //return [fail, win];
-    return payoffNormalForm[0][1];
+    return cfg.payoffNormalForm[0][1];
   }
 
   if (!alpha && beta) {
-    //return [win, fail];
-    return payoffNormalForm[1][0];
+    return cfg.payoffNormalForm[1][0];
   }
 
   if (!alpha && !beta) {
-    //return [fullFail, fullFail];
-    return payoffNormalForm[1][1];
+    return cfg.payoffNormalForm[1][1];
   } 
 }
 
-function getBehavior(source, target) {
+function getBehavior(source, alphaPlaybook, target, betaPlaybook) {
   if (source.behavior === "cooperator") {
     return true;
   }
@@ -76,16 +71,20 @@ function getBehavior(source, target) {
   }
 
   if (source.behavior === "copycat") {
-    if (target.playbook.length >= 1) {
-      lastMove = target.playbook[target.playbook.length-1];
+    if (alphaPlaybook.length >= 1) {
+      //lastMove = target.playbook[target.playbook.length-1];
+      lastMove = betaPlaybook[betaPlaybook.length-1];
       if (lastMove === false) {
+        //console.log("last move false, playing false")
         return false;
       }
       else {
+        //console.log("last move true, playing true")
         return true;
       }
     }
     else {// no moves played yet
+      //console.log("no moves playing true")
       return true;
     }
   } 
@@ -97,56 +96,60 @@ function getBehavior(source, target) {
 
   if (source.behavior === "clever") { 
   // clever fox tries to cheat!
-    if (target.playbook.length === 0) {
-      //console.log("innovator defaults to cooperate on 1st round")
-      return true;
+    if (alphaPlaybook.length >= 1) {
+      //lastMove = target.playbook[target.playbook.length-1];
+      lastMove = betaPlaybook[betaPlaybook.length-1];
+      if (lastMove === false) {
+        //console.log("last move false, playing true")
+        return true;
+      }
+      else {
+        //console.log("last move true, playing true")
+        return false;
+      }
     }
-    if (target.playbook.length === 1) {
-      //console.log("innovator defaults to cheat on 2nd round")
+    else {// no moves played yet
+      ///console.log("no moves playing true")
       return false;
     }
+  } 
 
-    if (target.playbook.length >= 2) {
-      lastMove = target.playbook[target.playbook.length-1];
-      penultimateMove = target.playbook[target.playbook.length-2];
-      if ((lastMove === false) && (penultimateMove === false)) {
-        return false;
-      }
-      if ((lastMove === true) && (penultimateMove === false)) {
-        return true;
-      }
-      if ((lastMove === true) && (penultimateMove === true)) {
-        return false;
-      }
-      if ((lastMove === false) && (penultimateMove === true)) {
-        return true;
-      }
+  if (source.behavior === "wise") { 
+//detective starts with [cooperator,  cheat, cooperator, cooperator] afterwards, if opponent ever retaliates with cheat it plays like copycat, else plays like always cheat
+    if ((target.behavior === "cheater") || (target.behavior === "cooperator") || (target.behavior === "random") || (target.behavior === "clever")) {
+      return false;
+    }
+    if (target.behavior === "copycat") {
+      return true;
     }
   } 
 }
 
 
-function mostDangerousGame(rootElement) {
+function mostDangerousGame(rootElement, graphElement, cfg) {
   var i = 0;
-  
+  brokenLinks = [];
   while (i < linkData.length) {
     var targetBehavior,
     sourceBehavior,
     trialResult;
 
-    targetBehavior = getBehavior(linkData[i].target, linkData[i].source);
-    sourceBehavior = getBehavior(linkData[i].source, linkData[i].target);
+    targetBehavior = getBehavior(linkData[i].target, linkData[i].targetPlaybook, linkData[i].source, linkData[i].sourcePlaybook);
+    sourceBehavior = getBehavior(linkData[i].source, linkData[i].sourcePlaybook, linkData[i].target, linkData[i].targetPlaybook);
 
-    trialResult = trial(sourceBehavior, targetBehavior);
+    trialResult = trial(sourceBehavior, targetBehavior, cfg);
 
     linkData[i].source.playbook.push(sourceBehavior);
     linkData[i].target.playbook.push(targetBehavior);
 
+    linkData[i].sourcePlaybook.push(sourceBehavior);
+    linkData[i].targetPlaybook.push(targetBehavior);
+
     linkData[i].source.value += trialResult[0]
     linkData[i].target.value += trialResult[1]
 
-    sourceStrengthDelta = trialResult[0] * linkStrengthNormalization;
-    targetStengthDelta = trialResult[1] * linkStrengthNormalization;
+    sourceStrengthDelta = trialResult[0] * cfg.linkStrengthNormalization;
+    targetStengthDelta = trialResult[1] * cfg.linkStrengthNormalization;
 
     /* link strength schemes
     summation: the sum of both trailResults
@@ -154,7 +157,7 @@ function mostDangerousGame(rootElement) {
     source-sum: the source trailResult is added
     quadrature: ?
 
-    cullTheWeak option makes the link break if stength falls below zero
+    severable option makes the link break if stength falls below zero
 
     strengthByTarget: strength determined by target only
     strengthBySource: strength determiend by source only
@@ -163,16 +166,21 @@ function mostDangerousGame(rootElement) {
     strengthByWeightedValue: strength determined by value weighted sum of source and target
     */
 
-    //console.log("trialResult[0]: ", trialResult[0])
-    // var linkBehavior = "strengthDefault";
-    //var linkBehavior = "strengthBySource";
-    //console.log("linkBehavior: " + linkBehavior);
-
-    switch(linkBehavior) {
+    switch(cfg.linkBehavior) {
       case "strengthDefault":
         break;
+      case "strengthByFreewill":
+        if (sourceBehavior && targetBehavior) {
+          linkData[i].strength += 2*cfg.linkStrengthNormalization;}
+        if (sourceBehavior && !targetBehavior) {
+          linkData[i].strength -= 1*cfg.linkStrengthNormalization;}
+        if (!sourceBehavior && targetBehavior) {
+          linkData[i].strength -= 1*cfg.linkStrengthNormalization;}
+        if (!sourceBehavior && !targetBehavior) {
+          //console.log('betrayals!')
+          linkData[i].strength -= 1*cfg.linkStrengthNormalization;}        
+        break;
       case "strengthBySource":
-        //console.log("case strengthBySource")
         linkData[i].strength += sourceStrengthDelta;
         break;
       case "strengthByTarget":
@@ -193,7 +201,7 @@ function mostDangerousGame(rootElement) {
       case "strengthByWeightedValue":
         //console.log("case strengthByWeightedValue")
         linkData[i].strength += linkData[i].source.value * sourceStrengthDelta + 
-          linkData[i].target.value * targetStengthDelta ;
+        linkData[i].target.value * targetStengthDelta ;
         break;
     }
 
@@ -201,74 +209,81 @@ function mostDangerousGame(rootElement) {
       linkData[i].strength = 1.0;
       }
 
-
-    //console.log("i: " + i)
     if (linkData[i].strength <= 0 ) {
-      if (cullTheWeak) {
-        //console.log("link broken!")
-        //console.log("linkData.length() "+ linkData.length)
-        linkData.splice(i, 1);
-        updateLinks();
-        //console.log("linkData.length() "+ linkData.length)
-        //linkData[i].strength = 0.01;
+      if (cfg.severable) {
+        //console.log("link broken, pushing: ", linkData[i].source.id, "-", linkData[i].target.id)
+        brokenLinks.push(i);
       }
       else {
-        console.log("link strength at zero")
-        linkData[i].strength = 0.0;
+        //console.log("link strength at zero, setting to 0.01 floor")
+        linkData[i].strength = 0.01;
       }
     }
 
-    //console.log("linkData[i].strength: " + linkData[i].strength)
-
     i += 1;
 
-    // d3.select(rootElement)
-    //   .selectAll("table")
-    //   .remove();
+    // updates could be moved after looping for efficeny, but visually?
+    // tabulate(rootElement, nodeData, ['id', 'behavior', 'value']);
+    // linkTabulate(linkData, ['label', 'strength', 'invStrength']);
+    // updateSimulation();
+  }
 
-    // // these updates could be moved after looping for efficeny, but visually?
-//    tabulate(rootElement, nodeData, ['id', 'behavior', 'value']);
-    //linkTabulate(linkData, ['label', 'strength', 'invStrength']);
-    //updateSimulation();
-  }  
+  var sortedBrokenLinks =  brokenLinks.sort(function(a,b) {return a - b; });
+
+  //console.log(sortedBrokenLinks)
+  for (var q = sortedBrokenLinks.length - 1; q >= 0; q--) {  
+    //console.log("removing: ", sortedBrokenLinks[q], " : ", linkData[sortedBrokenLinks[q]].source.id,"-",linkData[sortedBrokenLinks[q]].target.id)
+    linkData.splice(sortedBrokenLinks[q], 1); 
+    //cfg.data.links.splice(sortedBrokenLinks[q], 1);
+    }
+  //for (var g = linkData.length - 1; g >= 0; g--) {  
+    // console.log("links after rmd: ", g, " : ", linkData[g].source.id,"-",linkData[g].target.id) 
+  //}
+
+  for (var g = nodeData.length - 1; g >= 0; g--) {  
+    //console.log("nodes: ", g, " : ", nodeData[g].id); //,"-",linkData[g].target.id) 
+  }
+  updateLinks();
+
+  var isolatedNodes = [];
+  for (var g = nodeData.length - 1; g >= 0; g--) {
+      
+    if (getNeighbors(nodeData[g]).length <= 1) {
+        if (nodeData[g].id != "center") {
+          isolatedNodes.push(g);
+          console.log(nodeData[g].id + " is isolated")
+        }
+    }
+    else {
+        continue;
+    }
+  }
+
+  var sortedIsolatedNodes =  isolatedNodes.sort(function(a,b) {return a - b; });
+
+  for (var q = sortedIsolatedNodes.length - 1; q >= 0; q--) {  
+    console.log("removing: " + nodeData[sortedIsolatedNodes[q]].id)
+    // to-do node not removed synchronously, ie if the animation duration is too long it remains
+    
+    //d3.selectAll("#" + nodeData[sortedIsolatedNodes[q]].id)
+    //d3.select(graphElement).select("#" + nodeData[sortedIsolatedNodes[q]].id)
+    graphElement.select("#" + nodeData[sortedIsolatedNodes[q]].id)
+      .transition().duration(100)
+      .style('opacity', 0)
+
+    //d3.selectAll("#i" + nodeData[sortedIsolatedNodes[q]].id)
+    //d3.select(graphElement).select("#i" + nodeData[sortedIsolatedNodes[q]].id)
+    graphElement.select("#i" + nodeData[sortedIsolatedNodes[q]].id)
+      .transition().duration(100)
+      .style('opacity', 0)
+      .remove();
+    
+    nodeData.splice(sortedIsolatedNodes[q], 1); 
+  }
+
+  //  for (var g = nodeData.length - 1; g >= 0; g--) {  
+  //  console.log("nodes after gametheory: ", g, " : ", nodeData[g].id); //,"-",linkData[g].target.id) 
+  //}
+
 }
 
-function tabulate(rootElement, data, columns) {
-  var table = d3.select(rootElement)
-  // var table = d3.select("body .wrapper .rightDiv")
-    .append('table')
-
-  var tableHead = table.append('thead')
-  var tableBody = table.append('tbody');
-
-  tableHead.append('tr')
-    .selectAll('th')
-    .data(columns).enter()
-    .append('th')
-    .text(function (column) { return column; });
-
-  var rows = tableBody.selectAll('tr')
-    .data(data)
-    .enter()
-    .append('tr');
-
-  sform = d3.format(".4n")
-  var cells = rows.selectAll('td')
-    .data(function (row) {
-      return columns.map(function (column) {
-        return {column: column, value: row[column]};
-      });
-    })
-    .enter()
-    .append('td')
-    .text(function (d,i ) {
-      if ( i === 2) {
-        return sform(d.value);
-      } 
-      else {
-        return d.value;
-      }
-    });
-
-  return table;
-}
