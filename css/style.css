@@ -1,22 +1,28 @@
 :root {
   --background-color: #E9E9E9;
-  --primary-color: #06799F;   /*216278  024E68  3AAACF  62B4CF */
+  --primary-color: #06799F;
   --primary-color3: #62B4CF;
   --primary-color2: #3AAACF;
-  --seconday-color: #FFB400;    /*BF9530  A67500  FFC740  FFD673 */
-  --tertiary-color: #FF2800;   /*BF4630  A61A00  FF5D40  FF8973 */
+  --seconday-color: #FFB400;
+  --tertiary-color: #FF2800;
   --main-text-color: #131313;
   --border-status: none;
   --off-color: #ccc;
   --link-color: #ccc;
 }
 
-html{
-    padding:0;
-    margin: 0;
-    height:100%;
-    font-family: 'Goudy Bookletter 1911', Georgia, serif;
-    font-size: 1.1em;
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  font-family: 'Goudy Bookletter 1911', Georgia, serif;
+  font-size: 1.1em;
+  line-height: 1.5;
 }
 
 body {
@@ -26,6 +32,8 @@ body {
     height:100%;
     min-height: 100%;
     width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-y: hidden; /* Hide vertical scrollbar on body */
     background-color: var(--background-color);
     color: var(--main-text-color);
 }
@@ -36,8 +44,11 @@ div.wrapper {
     padding-left: 0px;
     padding-right: 0px;
     width: 100%;
-    min-width: 800px;
-    max-width: 1680px;
+    min-width: 320px;
+    max-width: none;
+    height: 100%;
+    overflow: visible; /* Allow scroll snap container to handle scrolling */
+    box-sizing: border-box;
     background-color: var(--background-color);
 }
 
@@ -85,9 +96,96 @@ a:visited {
 
 
 
+/* Scroll snap container for vertical sections */
 #fullpage {
-    padding-left: 55px;
-    padding-right: 55px;
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    overscroll-behavior: none;
+    box-sizing: border-box;
+    /* Hide scrollbar while keeping scroll functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+#fullpage::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
+}
+
+/* Each section snaps to viewport */
+.section {
+    height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px clamp(20px, 5vw, 80px);
+    box-sizing: border-box;
+}
+
+/* Disable scroll snap on mobile for better scrolling */
+@media (max-width: 768px) {
+    #fullpage {
+        scroll-snap-type: y proximity; /* Less aggressive snapping */
+    }
+}
+
+/* Horizontal slide container */
+.section.has-slides {
+    overflow: hidden; /* Prevent vertical scroll inside slide sections */
+    padding: 0; /* Remove padding for slide sections */
+}
+
+.slides-wrapper {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.slides-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.slide {
+    flex: 0 0 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px clamp(20px, 5vw, 80px);
+    box-sizing: border-box;
+}
+
+/* Base styles for content containers */
+div.leftDiv,
+div.rightDiv {
+    box-sizing: border-box;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Add padding to direct text content in sections */
+.section > p,
+.section > img,
+.section > ul,
+.section > h1,
+.section > h2,
+.section > h3 {
+    padding-left: clamp(16px, 3vw, 55px);
+    padding-right: clamp(16px, 3vw, 55px);
+    box-sizing: border-box;
 }
 
 /*
@@ -97,11 +195,44 @@ a:visited {
   //.style("border", "3px solid tan")
 }*/
 
+/* Title page SVG - keep reasonable size on desktop */
+.aesopSvg {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: block;
+}
+
 .aesopTitle {
     font-family: 'Goudy Bookletter 1911', serif;
     text-align: center;
     font-size: 3.5em;
     color: var(--main-text-color);
+}
+
+/* Page 0 animation classes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeIn 1.5s ease-out forwards;
+}
+
+.animate-delay-1 {
+    animation-delay: 0.3s;
+    opacity: 0;
+}
+
+.animate-delay-2 {
+    animation-delay: 0.6s;
+    opacity: 0;
 }
 
 h1 {
@@ -169,52 +300,91 @@ div.abDiv {
    /* width: 300px;*/
 }
 
-/* for small screens */
-/*@media all and (max-width: 890px), (orientation: portrait) {
-div.leftDiv {
-    width:100%;
-    outline-style: var(--border-status);
-    outline-color: var(--primary-color);
-    overflow: visible;
-    position: relative;
-}
-div.rightDiv {
-    width:100%;
-    outline-style: var(--tertiary-color);
-    outline-color: grey;
-    overflow: visible;
-}
-}*/
+/* ============================================
+   RESPONSIVE BREAKPOINTS - MOBILE FIRST
+   ============================================ */
 
-/* for big screens *//*
-@media all and (min-width: 800px), (orientation: landscape) {*/
-div.rightDiv {
-    /*max-width:0px;*/
-    /*max-width:1680px;*/
-    width:50%;
-    /*height: 300px;*/
-    float: left;
-    /*: 100%;*/
-/*    background-color: var(--main-bg-color);
-    outline-style: var(--border-status);
-    outline-color: green;*/
-    overflow:visible;
+/* Extra small screens - mobile */
+@media (max-width: 500px) {
+    div.leftDiv {
+        width: 100%;
+        float: none;
+        display: block;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+        position: relative;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+    
+    div.rightDiv {
+        width: 100%;
+        float: none;
+        display: block;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+    
+    .aesopTitle {
+        font-size: 2.5em;
+    }
+    
+    h1 {
+        font-size: 2.0em;
+    }
+    
+    h2 {
+        font-size: 1.8em;
+    }
 }
-div.leftDiv {
-    width: 50%;
-    float: left;
-/*  background-color: var(--main-bg-color);
-    outline-style: var(--border-status);
-    outline-color: cyan;*/
-    overflow:visible;
-    position:relative;
+
+/* Small tablets */
+@media (min-width: 501px) and (max-width: 768px) {
+    div.leftDiv {
+        width: 100%;
+        float: none;
+        display: block;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+        position: relative;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+    
+    div.rightDiv {
+        width: 100%;
+        float: none;
+        display: block;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
 }
-/*}*/
+
+/* Desktop - two-column layout */
+@media (min-width: 769px) {
+    div.rightDiv {
+        width: 50%;
+        float: left;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+        max-width: 800px; /* Prevent columns from getting too wide */
+        box-sizing: border-box;
+    }
+    
+    div.leftDiv {
+        width: 50%;
+        float: left;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+        position: relative;
+        max-width: 800px;
+        box-sizing: border-box;
+    }
+}
 
  /* Style the tab */
 div.tab {
    /* font-family: 'Aldrich', Arial, Helvetica, sans-serif;*/
-    width: 500px;
+    width: 100%;
+    max-width: 600px; /* Desktop max width */
     overflow: hidden;
     /*border-top-left-radius: .5em;*/
 /*   border: 1px solid #ccc;*/
@@ -228,7 +398,9 @@ div.tab button {
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 6px 13px;
+    padding: 14px 16px;
+    min-height: 44px;
+    min-width: 44px;
     transition: 0.3s;
     background-color: var(--primary-color);
 }
@@ -253,7 +425,8 @@ div.tab button.active {
 
 /* Style the tab content */
 .tabcontent {
-    width: 480px;
+    width: 100%;
+    max-width: 580px; /* Desktop max */
     display: none;
     padding: 10px;
     border: 1px solid var(--off-color);
@@ -264,12 +437,30 @@ div.tab button.active {
 } 
 
 table.tabulateTable {
-    font-size: .8em;
+    font-family: 'Goudy Bookletter 1911', Georgia, serif;
+    font-size: 1.0em;
+    max-width: 600px; /* Desktop max width */
+    width: 100%; /* Take full available width but respect max */
+    table-layout: auto;
+    overflow-x: auto; /* Allow horizontal scroll if needed */
+    display: block;
 /*    overflow-y:scroll;*/
     overflow:auto;
    /*height:100px;*/
    height: 100%;
    display:block;
+}
+
+table.tabulateTable th {
+    font-family: 'Goudy Bookletter 1911', Georgia, serif;
+    font-weight: bold;
+    padding: 8px;
+    border-bottom: 2px solid var(--main-text-color);
+}
+
+table.tabulateTable td {
+    font-family: 'Goudy Bookletter 1911', Georgia, serif;
+    padding: 6px 8px;
 }
 
 table {
@@ -306,16 +497,16 @@ table td.sp {
 
 table td.tableDat {
     border: 2px black solid;
-    font-size: 1.9em;
+    font-size: 1.5em; /* Reduced from 1.9em */
     line-height: 1.0em;
     white-space: nowrap;
-    min-width: 40px;
-    min-height: 40px;
-    width: 50px;
-    height: 50px;
-    max-width: 70px;
-    max-height: 70px;
-    font-family: helvetica, arial, sans-serif;
+    min-width: 35px; /* Reduced from 40px */
+    min-height: 35px; /* Reduced from 40px */
+    width: 45px; /* Reduced from 50px */
+    height: 45px; /* Reduced from 50px */
+    max-width: 60px; /* Reduced from 70px */
+    max-height: 60px; /* Reduced from 70px */
+    font-family: 'Goudy Bookletter 1911', Georgia, serif;
 }
 
 table .center {
@@ -323,6 +514,84 @@ table .center {
     /*max-width: 120px;*/
     text-align: center;
     /*position:relative;*/
+}
+
+/* Payoff matrix table styling */
+.payoff-table {
+    font-family: 'Goudy Bookletter 1911', Georgia, serif;
+    width: 100%;
+    max-width: 500px; /* Constrain table width */
+    table-layout: fixed; /* Force consistent column widths */
+    font-size: 0.95em;
+}
+
+.payoff-table th {
+    font-family: 'Goudy Bookletter 1911', Georgia, serif;
+    font-weight: bold;
+    padding: 6px 4px; /* Reduced padding */
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.payoff-table td {
+    font-family: 'Goudy Bookletter 1911', Georgia, serif;
+    padding: 6px 4px; /* Reduced padding */
+    text-align: center;
+    font-size: 0.9em;
+    word-wrap: break-word;
+}
+
+.payoff-table td:first-child {
+    font-weight: bold;
+}
+
+/* Further reduce table size on smaller desktops */
+@media (max-width: 1200px) {
+    .payoff-table {
+        max-width: 400px;
+        font-size: 0.85em;
+    }
+    
+    .payoff-table th,
+    .payoff-table td {
+        padding: 4px 2px;
+        font-size: 0.85em;
+    }
+}
+
+/* Payoff buttons styling */
+.payoff-button {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    min-height: 44px;
+    min-width: 44px;
+    max-height: 32px; /* Desktop max size */
+    max-width: 32px;
+    padding: 8px;
+}
+
+/* Desktop hover effect - gentle fade to filled */
+@media (hover: hover) and (pointer: fine) {
+    .payoff-button:hover {
+        opacity: 1.0;
+        filter: drop-shadow(0 0 4px rgba(6, 121, 159, 0.4));
+    }
+}
+
+/* Active/clicked state - grow effect for both desktop and mobile */
+.payoff-button-active,
+.payoff-button:active {
+    transform: scale(1.15);
+    opacity: 1.0 !important;
+    filter: drop-shadow(0 0 6px rgba(6, 121, 159, 0.6)) !important;
+}
+
+/* Mobile-specific touch feedback */
+@media (max-width: 768px) {
+    .payoff-button:active {
+        transform: scale(1.2);
+    }
 }
 
 .prisonerP1 {
@@ -396,14 +665,17 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
     border: none;
     position: absolute;
     display: inline;
+    object-fit: contain;
+    /* Add padding for larger touch targets */
+    padding: 8px;
     -webkit-transition: width .4s, height .4s, margin-left .4s, margin-top .4s;
     transition: width .4s, height .4s, margin-left .4s, margin-top .4s;
 }
 
 #l1 img {
-    width: 40px;
-    height: 40px;
-    margin-left: -135px;
+    width: 36px;
+    height: 36px;
+    margin-left: -122px;
  }
  
  #l2 img {
@@ -414,9 +686,9 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 
 
 #l3 img {
-    width: 40px;
-    height: 40px;
-    margin-left: 25px;
+    width: 36px;
+    height: 36px;
+    margin-left: 23px;
  }
 
 
@@ -427,9 +699,9 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
  }
 
 #l1 img:hover {
-    width: 50px;
-    height: 50px;
-    margin-left: -140px;
+    width: 45px;
+    height: 45px;
+    margin-left: -126px;
     margin-top: -5px;
 }
 
@@ -442,9 +714,9 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 
 
 #l3 img:hover {
-    width: 50px;
-    height: 50px;
-    margin-left: 20px;
+    width: 45px;
+    height: 45px;
+    margin-left: 18px;
     margin-top: -5px;
 }
 
@@ -453,4 +725,548 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
     height: 50px;
     margin-left: 100px;
     margin-top: -5px;
+}
+
+/* Additional mobile optimizations */
+@media (max-width: 500px) {
+    body {
+        font-size: 1.0em;
+    }
+    
+    p {
+        font-size: 1.0em;
+        line-height: 1.6;
+    }
+    
+    /* Ensure minimum readable text size */
+    html {
+        font-size: 16px;
+        min-font-size: 16px;
+    }
+    
+    /* Ensure tables and wide content don't break layout */
+    table {
+        overflow-x: auto;
+        display: block;
+        max-width: 100%;
+        font-size: 14px;
+    }
+    
+    /* Make sure images scale properly */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    svg {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* Make tabs responsive on mobile */
+    div.tab {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .tabcontent {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Smaller payoff buttons on mobile */
+    .payoff-button {
+        max-width: 28px;
+        max-height: 28px;
+        padding: 6px;
+    }
+    
+    /* Compact payoff table on mobile */
+    .payoff-table {
+        max-width: 100%;
+        font-size: 0.75em;
+        overflow-x: auto;
+        display: block;
+    }
+    
+    .payoff-table th,
+    .payoff-table td {
+        padding: 3px 2px;
+        font-size: 0.8em;
+    }
+}
+
+/* Hide non-critical elements on very small screens */
+@media (max-width: 360px) {
+    .mobile-hide {
+        display: none !important;
+    }
+    
+    /* Further optimize spacing on tiny screens */
+    h1 {
+        font-size: 1.75em;
+    }
+    
+    h2 {
+        font-size: 1.5em;
+    }
+    
+    .aesopTitle {
+        font-size: 2em;
+    }
+    
+    /* Hide decorative images on very small screens */
+    #page0 svg image:not(#crowImage) {
+        display: none;
+    }
+}
+
+/* Desktop optimization for large screens */
+@media (min-width: 1400px) {
+    /* Ensure optimal reading width even on 4K displays */
+    #fullpage {
+        padding-left: clamp(55px, 5vw, 100px);
+        padding-right: clamp(55px, 5vw, 100px);
+    }
+    
+    /* Keep charts at optimal size */
+    .leftDiv svg,
+    .rightDiv svg {
+        max-width: 550px;
+    }
+    
+    /* Optimal paragraph width for readability */
+    p {
+        max-width: 700px;
+    }
+    
+    /* Constrain dice image */
+    #page1 img {
+        max-width: 250px;
+        max-height: 180px;
+    }
+}
+
+/* Medium desktop screens */
+@media (min-width: 769px) and (max-width: 1399px) {
+    /* Keep payoff buttons at reasonable size */
+    .payoff-button {
+        max-width: 30px;
+        max-height: 30px;
+    }
+    
+    /* Dice image on page1 */
+    #page1 img {
+        max-width: 225px;
+        max-height: 160px;
+    }
+}
+
+/* SVG container responsive styling */
+.leftDiv svg,
+.rightDiv svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: 600px; /* Optimal size for desktop */
+    margin: 0 auto; /* Center on desktop */
+    box-sizing: border-box;
+}
+
+svg {
+    max-width: 100%;
+    height: auto;
+    box-sizing: border-box;
+}
+
+/* Ensure all images are constrained */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Game button interactions */
+.gameButtons {
+    transition: all 0.2s ease;
+}
+
+/* Game button images - constrain size */
+.gameButtons image {
+    max-width: 60px;
+    max-height: 60px;
+}
+
+/* Crane and wolf button specific styling */
+.crane-wolf-button image {
+    transition: all 0.2s ease;
+    max-width: 60px;
+    max-height: 60px;
+}
+
+/* Desktop hover effects only (not on touch devices) */
+@media (hover: hover) and (pointer: fine) {
+    .gameButtons:hover {
+        opacity: 0.9;
+    }
+    
+    .crane-wolf-button:hover image {
+        filter: drop-shadow(0 0 4px rgba(6, 121, 159, 0.4));
+    }
+}
+
+/* Active/clicked state - grow effect */
+.gameButtons.button-active image,
+.crane-wolf-button.button-active image {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(6, 121, 159, 0.6));
+}
+
+/* Mobile touch feedback */
+@media (max-width: 768px) {
+    .crane-wolf-button:active image {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 8px rgba(6, 121, 159, 0.7));
+    }
+}
+
+/* ============================================
+   VERTICAL NAVIGATION DOTS
+   ============================================ */
+
+#section-nav {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 0;
+}
+
+.nav-dot:hover {
+    background: var(--primary-color3);
+    transform: scale(1.2);
+}
+
+.nav-dot.active {
+    background: var(--primary-color);
+    width: 14px;
+    height: 14px;
+}
+
+@media (max-width: 768px) {
+    #section-nav {
+        right: 10px;
+        gap: 10px;
+    }
+    
+    .nav-dot {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .nav-dot.active {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+/* Mobile touch target enhancements */
+@media (max-width: 768px) {
+    /* Ensure all interactive elements meet 44px minimum */
+    a, button, input, select, textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Share button touch targets */
+    #share-buttons a {
+        padding: 12px;
+        display: inline-block;
+    }
+    
+    #l1 img, #l3 img {
+        width: 44px !important;
+        height: 44px !important;
+    }
+}
+
+/* Auto-hide navigation on very narrow screens for more content space */
+@media (max-width: 480px) {
+    /* Keep navigation but make it less obtrusive */
+    #section-nav {
+        opacity: 0.3;
+        transition: opacity 0.3s;
+    }
+    
+    #section-nav:hover,
+    #section-nav:focus,
+    #section-nav:active {
+        opacity: 1;
+    }
+    
+    /* Ensure slide navigation remains visible */
+    .fp-slidesNav {
+        opacity: 0.5;
+        transition: opacity 0.3s;
+    }
+    
+    .fp-slidesNav:hover,
+    .fp-slidesNav:focus,
+    .fp-slidesNav:active {
+        opacity: 1;
+    }
+}
+
+/* Touch-friendly arrow controls for slides (if enabled) */
+.fp-controlArrow {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 10px;
+    margin-top: -22px !important;
+}
+
+@media (max-width: 768px) {
+    .fp-controlArrow.fp-prev {
+        left: 8px !important;
+        border-width: 22px 22px 22px 0 !important;
+    }
+    
+    .fp-controlArrow.fp-next {
+        right: 8px !important;
+        border-width: 22px 0 22px 22px !important;
+    }
+}
+
+/* Improve touch scrolling behavior */
+@media (max-width: 768px) {
+    /* Better mobile touch scrolling for sections */
+    #fullpage {
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: y proximity; /* Less aggressive snapping on mobile */
+        touch-action: manipulation; /* Prevent accidental zooming on double tap */
+    }
+    
+    /* Better swipe detection for slides */
+    .slides-wrapper {
+        touch-action: pan-x;
+        -webkit-overflow-scrolling: touch;
+        scroll-padding: 0 20px; /* Better edge visibility */
+    }
+    
+    /* Prevent text selection during swipe */
+    .slide {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    
+    /* Enable text selection for paragraphs */
+    .slide p {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+    
+    /* Touch feedback for game buttons on mobile */
+    .gameButtons {
+        transition: opacity 0.2s;
+    }
+    
+    .gameButtons:active {
+        opacity: 0.7 !important;
+    }
+}
+
+/* Add swipe indicator for slides on mobile */
+@media (max-width: 768px) {
+    .has-slides::after {
+        content: '← swipe →';
+        position: absolute;
+        bottom: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(19, 19, 19, 0.5);
+        font-size: 0.85em;
+        pointer-events: none;
+        animation: fadeOut 3s forwards;
+        z-index: 10;
+    }
+    
+    @keyframes fadeOut {
+        0%, 50% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+}
+
+/* ============================================
+   FABLES SECTION STYLES
+   ============================================ */
+
+/* Center fable text content */
+#page2 .slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px clamp(20px, 5vw, 80px);
+    box-sizing: border-box;
+}
+
+#page2 .slide p {
+    max-width: 800px;
+    text-align: center;
+    margin: 10px auto;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* Lion and Mouse background */
+#aesopSlide1 {
+    background-image: url('/imgs/fables/lionmouse_.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+}
+
+/* Goat SVG positioning - behind text */
+#goatSVG {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+#goatSVG image {
+    opacity: 0.3;
+}
+
+/* Custom slide navigation with arrows */
+.custom-slides-nav {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 100;
+}
+
+.custom-nav-arrow {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.custom-nav-arrow:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.custom-nav-arrow.disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.custom-nav-arrow.disabled:hover {
+    opacity: 0.3;
+    transform: none;
+}
+
+.custom-nav-arrow.left {
+    background-image: url('/imgs/icons/left.png');
+}
+
+.custom-nav-arrow.left:hover:not(.disabled) {
+    background-image: url('/imgs/icons/left_filled.png');
+}
+
+.custom-nav-arrow.right {
+    background-image: url('/imgs/icons/right.png');
+}
+
+.custom-nav-arrow.right:hover:not(.disabled) {
+    background-image: url('/imgs/icons/right_filled.png');
+}
+
+.custom-nav-dots {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.custom-nav-dot {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--main-text-color);
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.custom-nav-dot:hover {
+    background-color: var(--primary-color3);
+    transform: scale(1.1);
+}
+
+.custom-nav-dot.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Hide the default fullPage.js navigation for fables slides */
+#page2 .fp-slidesNav {
+    display: none !important;
+}
+
+/* Mobile adjustments for fables */
+@media (max-width: 768px) {
+    #page2 .slide {
+        padding: 30px 20px;
+    }
+    
+    #page2 .slide p {
+        font-size: 1.0em;
+        max-width: 100%;
+    }
+    
+    .custom-slides-nav {
+        bottom: 20px;
+        gap: 15px;
+    }
+    
+    .custom-nav-arrow {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .custom-nav-dots {
+        gap: 10px;
+    }
+    
+    .custom-nav-dot {
+        width: 14px;
+        height: 14px;
+    }
 }

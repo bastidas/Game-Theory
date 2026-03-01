@@ -1,0 +1,25 @@
+{
+  "name": "game-theory",
+  "version": "2.0.0",
+  "description": "Interactive visualization exploring game theory concepts and decision-making strategies",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "game-theory",
+    "visualization",
+    "d3",
+    "education"
+  ],
+  "author": "Alexander Bastidas Fry",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "d3": "^7.9.0"
+  }
+}
