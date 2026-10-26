@@ -1,0 +1,26 @@
+.sim-section {
+  justify-content: flex-start;
+  overflow: auto;
+}
+
+.section.has-slides {
+  justify-content: flex-start;
+}
+
+.slide {
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+.custom-nav-arrow {
+  border: 0;
+  background-color: transparent;
+}
