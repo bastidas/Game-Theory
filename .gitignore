@@ -20,5 +20,6 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Misc
-docs/
+# Working notes stay local. The deeper essay is site content.
+docs/*
+!docs/deeper_essay.md
