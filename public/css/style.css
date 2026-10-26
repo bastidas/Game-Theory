@@ -9,6 +9,14 @@
   --border-status: none;
   --off-color: #ccc;
   --link-color: #ccc;
+  /* Infinity mark. Saved for later use across the site. */
+  --infinity-coral: #F38181;
+  --infinity-gold: #FCE38A;
+  --infinity-crimson: #E23E57;
+  --infinity-mint: #95E1D3;
+  --infinity-pink: #FFC4D0;
+  --infinity-cyan: #00DFFC;
+  --infinity-outline: #cfcfcf;
 }
 
 *, *::before, *::after {

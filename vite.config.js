@@ -1,20 +1,24 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 
 export default defineConfig({
-  root: '.',
-  publicDir: 'public',
+  plugins: [svelte()],
+  root: ".",
+  publicDir: "public",
   build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
+    outDir: "dist",
+    assetsDir: "assets",
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: './index.html'
-      }
-    }
+        main: "./index.html",
+        sandbox: "./sandbox.html",
+        deeper: "./deeper.html",
+      },
+    },
   },
   server: {
     port: 3000,
-    open: true
-  }
+    open: true,
+  },
 });
